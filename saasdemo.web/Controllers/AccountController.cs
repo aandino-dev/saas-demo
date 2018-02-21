@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,8 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
+using saasdemo.data;
 using saasdemo.web.Models;
 using saasdemo.web.Models.AccountViewModels;
 using saasdemo.web.Services;
@@ -220,7 +226,7 @@ namespace saasdemo.web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, TenantID = Guid.NewGuid(), Organization = model.Organization };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -232,6 +238,19 @@ namespace saasdemo.web.Controllers
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
+
+                    var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json");
+
+                    IConfiguration configuration = builder.Build();
+                    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(configuration.GetConnectionString("AzureWebJobsStorage"));
+                    CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                    CloudQueue queue = queueClient.GetQueueReference("tenant-queue");
+                    await queue.CreateIfNotExistsAsync();
+
+                    await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(new { user.TenantID, user.Organization })));
+
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);

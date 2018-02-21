@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using saasdemo.data;
 
-namespace saasdemo.web.Models
+namespace saasdemo.data
 {
-    // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser, ITenant
+    public class Tenant : ITenant
     {
+        [Key]
         public Guid TenantID { get; set; }
         [MinLength(4), MaxLength(50)]
         public string Organization { get; set; }
