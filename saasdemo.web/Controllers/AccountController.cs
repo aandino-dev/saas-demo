@@ -249,7 +249,7 @@ namespace saasdemo.web.Controllers
                     CloudQueue queue = queueClient.GetQueueReference("tenant-queue");
                     await queue.CreateIfNotExistsAsync();
 
-                    await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(new { user.TenantID, user.Organization })));
+                    await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(new { user.TenantID, user.Organization, Email = user.NormalizedEmail })));
 
                     return RedirectToLocal(returnUrl);
                 }

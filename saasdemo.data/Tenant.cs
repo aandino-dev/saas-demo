@@ -17,5 +17,7 @@ namespace saasdemo.data
         public string Server { get; set; }
         [MinLength(4), MaxLength(50)]
         public string Database { get; set; }
+        [MaxLength(255)]
+        public string Email { get; set; }
     }
 }

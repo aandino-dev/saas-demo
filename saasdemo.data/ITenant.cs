@@ -12,5 +12,6 @@ namespace saasdemo.data
         string Organization { get; set; }
         string Server { get; set; }
         string Database { get; set; }
+        string Email { get; set; }
     }
 }

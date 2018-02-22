@@ -171,6 +171,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\saasdemo.data\saasdemo.data.csproj">
+      <Project>{74031c93-486d-4ff0-a81e-acff2f080ead}</Project>
+      <Name>saasdemo.data</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
